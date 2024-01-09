@@ -1,0 +1,77 @@
+PluginInfo = {
+    Name = "Test Plugins~lowercase-module-test", -- The tilde here indicates folder structure in the Shematic Elements pane
+    Version = "1.0.0",
+    Id = "lowercase-module-test.1.0.0",
+    Description = "Plugin for testing stuff",
+    ShowDebug = true,
+    Author = "Rod Driscoll"
+  }
+
+function GetColor(props)
+    return { 102, 102, 102 }
+end
+
+function GetPrettyName()
+	return string.match(PluginInfo.Name, '([^~]+)$')..' '.. PluginInfo.Version
+end
+
+local PageNames = {"Setup"}
+function GetPages(props)
+    local pages = {}
+    for ix,name in ipairs(PageNames) do
+      table.insert(pages, {name = PageNames[ix]})
+    end
+    return pages
+end
+
+function GetProperties()
+	local props = {}
+	return props
+end
+
+function RectifyProperties(props)
+    props.plugin_show_debug.Value = true 
+    return props
+end
+
+function GetControls(props)
+    local ctrls = {}
+    table.insert(ctrls, {
+        Name          = "Status",
+        ControlType   = "Indicator",
+        IndicatorType = Reflect and "StatusGP" or "Status",
+        PinStyle      = "Output",
+        UserPin       = true,
+        Count         = 1
+    })   
+    return ctrls
+end
+
+--Layout of controls and graphics for the plugin UI to display
+function GetControlLayout(props)
+    local layout = {}
+    local graphics = {}
+    local CurrentPage = PageNames[props["page_index"].Value]
+
+    if(CurrentPage == 'Setup') then
+        table.insert(graphics,{Type="Text",Text=GetPrettyName(),Position={15,35},Size={380,14},FontSize=10,HTextAlign="Right", Color={96,96,96}})
+    end
+    return layout, graphics
+end
+
+if Controls then
+  	-----------------------------------------------------------------------------------------------------------------------
+  	-- dependencies
+  	-----------------------------------------------------------------------------------------------------------------------
+      test_module = require("test-module-lowercase")
+  	-------------------------------------------------------------------------------
+  	-- Device functions
+  	-------------------------------------------------------------------------------
+    function initialize()
+        test_module.DoStuff()
+    end
+    initialize()
+    -----------------------------------------------------------------------------------------------------------------------
+    -- End of module
+    -----------------------------------------------------------------------------------------------------------------------
+end
